@@ -40,7 +40,7 @@ if (!isset($_COOKIE['user_id'])){
         <form class="" action="/" method="post">
             <button type="submit" name="incr_counter">+1</button>
         </form>
-        <form action="lib/exit.php">
+        <form action="logout.php">
             <input type="submit" value="Sign in">
         </form>
     </div>
