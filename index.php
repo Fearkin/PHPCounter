@@ -1,19 +1,26 @@
 <?php
 declare(strict_types=1);
+error_reporting(E_ALL);
 define('HOME_URL', 'http://localhost:8000' . $_SERVER['PHP_SELF']);
 
 require_once 'functions.php';
+
+session_set_cookie_params([
+    'httponly' => true,
+    'samesite' => 'Strict',
+]);
+session_start();
 
 if (isset($_POST['logout'])){
     require 'logout.php';
 }
 
-if (!isset($_COOKIE['user_id'])){
+if (!isset($_SESSION['user_id'])){
     require_once 'login.php';
     die();
 } else {
 
-    $userName = $_COOKIE['username'];
+    $userName = $_SESSION['username'];
     $pdo = getConnection();
     $rows = fetchUser($userName, $pdo);
     $userCounter = $rows['0']['counter'];
@@ -22,12 +29,12 @@ if (!isset($_COOKIE['user_id'])){
         $userCounter += 1;        
     }
 
-    $id = $_COOKIE['user_id'];
+    $id = $_SESSION['user_id'];
 
     $statement = $pdo->prepare("UPDATE users SET counter = :counter WHERE id = :id");
-    $statement->execute(array($userCounter, $id));
+    $statement->execute(array($userCounter, (int) $id));
 
-    setcookie('user_counter', (string) $userCounter, time() + 60 * 60);
+    $_SESSION['user_counter'] = $userCounter;
 
 }
 ?>
@@ -41,7 +48,7 @@ if (!isset($_COOKIE['user_id'])){
 
 <body>
 <div>
-    <?php echo $userCounter; ?>
+    <?php echo htmlspecialchars((string) $userCounter); ?>
     <form class="" action="/" method="post">
         <button type="submit" name="incr_counter">+1</button>
     </form>

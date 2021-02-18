@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once 'functions.php';
 
-if (!isset($_COOKIE['user_id'])){
+if (!isset($_SESSION['user_id'])){
 
     if (isset($_POST['signin_button'])){
         require 'login.php';
@@ -48,8 +48,9 @@ if (!isset($_COOKIE['user_id'])){
                     $rows = fetchUser($userName, $pdo);
 
                     if (count($rows) == 1){
-                        setcookie('user_id', (string) $rows['0']['id'], time() + (60 * 60 * 24 * 30));
-                        setcookie('username', $rows['0']['login'], time() + (60 * 60 * 24 * 30));
+                        $_SESSION['user_id'] = $rows['0']['id'];
+                        $_SESSION['username'] = $rows['0']['login'];
+
                         header("Location: " . HOME_URL);
                         die();
                     } else {
@@ -77,7 +78,7 @@ if (!isset($_COOKIE['user_id'])){
     <title>Sign up</title>
 </head>
 <body>
-    <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="POST">
         <label for="username">User: </label>
         <input type="text" id="username" name="username">
         <label for="password">Password: </label>
@@ -89,7 +90,7 @@ if (!isset($_COOKIE['user_id'])){
         
         <button type="submit" name="signup_button">Sign up</button>
 
-        <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
+        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="POST">
             <input type="submit" name="signin_button" value="Sign in">
         </form>
 

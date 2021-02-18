@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once 'functions.php';
 
-if (isset($_COOKIE['user_id'])){
+if (isset($_SESSION['user_id'])){
     require_once 'index.php';
     die();
 }
@@ -27,14 +27,13 @@ if (isset($_POST['signin_button'])) {
 
             if (password_verify($password, $rows['0']['password_hash'])) {
 
-                echo $rows['0']['id'];
-                setcookie('username', $rows['0']['login'], time() + (60 * 60 * 24 * 30));
-                setcookie('user_id', (string)$rows['0']['id'], time() + (60 * 60 * 24 * 30));
+                $_SESSION['username'] = $rows['0']['login'];
+                $_SESSION['user_id'] = $rows['0']['id'];
                 header("Location: " . HOME_URL);
                 die();
 
             } else {
-                echo "Wrong password or password";
+                echo "Wrong username or password";
             }
 
         } else {
